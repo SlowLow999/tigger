@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CPU Trigger</title>
+    <style>
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        #spinner {
+            width: 100px;
+            height: 100px;
+            background-color: blue;
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+<body>
+    <h1>Triggering CPU load...</h1>
+    <div id="spinner"></div>
+</body>
+</html>
