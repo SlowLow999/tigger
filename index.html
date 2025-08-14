@@ -1,57 +1,98 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Cast Use-After-Free Exploit</title>
-</head>
-<body>
-    <h1>Stage 1: Attempting to Compromise the Browser...</h1>
-    <div id="status">Status: Waiting to start...</div>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting...</title>
+    <!--
+        This meta tag performs the redirect.
+        - content="0.5; url=https://www.example.com"
+          - "0.5" means the redirect happens after 0.5 seconds.
+          - "url=" specifies the destination URL.
+          - Replace "https://www.example.com" with the actual URL you want to redirect to.
+    -->
+    <meta http-equiv="refresh" content="0.5; url=https://slowlow999.github.io/test/">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔗</text></svg>">
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+            color: #333;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 5em; /* Increased font size significantly */
+            text-transform: uppercase; /* Added for more impact */
+            letter-spacing: 5px; /* Added for more impact */
+            animation: bounce 0.8s infinite alternate; /* Added a subtle animation */
+        }
+        p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+        a:hover {
+            color: #0056b3;
+        }
+        .small-text {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 30px;
+        }
 
-    <script>
-        let globalObj = null;
-
-        function runExploit() {
-            document.getElementById('status').textContent = "Status: Triggering UAF bug...";
-
-            try {
-                // Step 1: Create an object that will be freed.
-                globalObj = new Object();
-                
-                // Step 2: Delete the object, but a reference to it remains.
-                // A real exploit would use a more complex method to trigger a bug
-                // in the garbage collector, but this demonstrates the principle.
-                globalObj = null;
-                
-                // Step 3: Fill the freed memory with a new object.
-                // We create a large number of objects to "spray" the heap, ensuring
-                // our new object lands in the freed memory location.
-                let spray = [];
-                for (let i = 0; i < 50000; i++) {
-                    spray.push(new Array(1024).fill(1337));
-                }
-
-                // Step 4: Use the freed memory location.
-                // A real exploit would have a dangling pointer to the freed memory.
-                // If a bug exists, a different part of the browser's code would
-                // now try to access the old, freed memory, and instead find our
-                // new, controlled data. This leads to memory corruption.
-
-                // A successful exploit will cause a crash here.
-                document.getElementById('status').textContent = "Exploit successful. Preparing for Stage 2...";
-                
-                // This is where a real exploit would get a read/write primitive.
-                // We'll simulate this by jumping to our next payload.
-                setTimeout(() => {
-                    // Start the next phase of the attack.
-                    startPrivilegeEscalation();
-                }, 1000);
-                
-            } catch (e) {
-                document.getElementById('status').textContent = `Exploit failed. Error: ${e.message}`;
+        /* Keyframes for bounce animation */
+        @keyframes bounce {
+            from {
+                transform: translateY(0);
+            }
+            to {
+                transform: translateY(-10px);
             }
         }
-        
-        window.onload = runExploit;
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>WRITE HELLO IN THE TEXT BOX</h1> <!-- Changed text to "WRITE HELLO IN THE TEXT BOX" -->
+    </div>
+
+    <script>
+        // Get the redirect URL from the meta tag to ensure consistency
+        const metaTag = document.querySelector('meta[http-equiv="refresh"]');
+        if (metaTag) {
+            const content = metaTag.getAttribute('content');
+            const urlMatch = content.match(/url=(.*)/);
+            if (urlMatch && urlMatch[1]) {
+                const redirectUrl = urlMatch[1];
+                const redirectLink = document.getElementById('redirectLink');
+                if (redirectLink) {
+                    redirectLink.href = redirectUrl;
+                }
+            }
+        }
     </script>
 </body>
 </html>
