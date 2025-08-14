@@ -5,13 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redirecting...</title>
     <!--
-        This meta tag performs the redirect.
-        - content="0.5; url=https://slowlow999.github.io/test/"
-          - "0.5" means the redirect happens after 0.5 seconds.
-          - "url=" specifies the destination URL.
-          - The URL has been updated to https://slowlow999.github.io/test/ for redirection.
+        The meta http-equiv="refresh" tag has been removed to prevent immediate, uncontrolled loops.
+        Redirection is now entirely handled by JavaScript based on a redirect counter.
     -->
-    <meta http-equiv="refresh" content="0.5; url=https://slowlow999.github.io/test/">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔗</text></svg>">
     <style>
         body {
@@ -34,35 +30,23 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             max-width: 500px;
             width: 100%;
+            padding-top: 60px; /* Added padding to give space for the H1 */
+            padding-bottom: 60px;
         }
         h1 {
             color: #2c3e50;
             margin-bottom: 20px;
-            font-size: 5em; /* Increased font size significantly */
-            text-transform: uppercase; /* Added for more impact */
-            letter-spacing: 5px; /* Added for more impact */
-            animation: bounce 0.8s infinite alternate; /* Added a subtle animation */
+            font-size: 3.5em; /* Adjusted slightly for better fit with long text */
+            text-transform: uppercase;
+            letter-spacing: 3px; /* Adjusted slightly */
+            animation: bounce 0.8s infinite alternate;
+            line-height: 1.2; /* Better line spacing for multiple words */
         }
         p {
             font-size: 1.1em;
             line-height: 1.6;
             margin-bottom: 25px;
         }
-        a {
-            color: #007bff;
-            text-decoration: none;
-            font-weight: bold;
-            transition: color 0.3s ease;
-        }
-        a:hover {
-            color: #0056b3;
-        }
-        .small-text {
-            font-size: 0.9em;
-            color: #666;
-            margin-top: 30px;
-        }
-
         /* Keyframes for bounce animation */
         @keyframes bounce {
             from {
@@ -76,30 +60,41 @@
 </head>
 <body>
     <div class="container">
-        <h1>WRITE HELLO IN THE TEXT BOX</h1> <!-- Changed text to "WRITE HELLO IN THE TEXT BOX" -->
+        <h1>WRITE HELLO IN THE TEXT BOX</h1> <!-- Text as requested by the user -->
+        <p>Attempting to resolve redirection loop...</p>
     </div>
 
     <script>
-        // This script is technically not needed for the meta refresh itself,
-        // but it was included in previous versions.
-        // It's commented out as it no longer serves a functional purpose
-        // in this simplified redirect page, but kept for reference if needed.
+        // --- Configuration for this page ---
+        // The URL of the *other* GitHub Page in your loop.
+        // If this file is for 'tigger', then otherLoopPageUrl is 'test'.
+        const otherLoopPageUrl = 'https://slowlow999.github.io/test/'; // <--- THIS IS THE KEY CHANGE for the 'tigger' page
 
-        // Get the redirect URL from the meta tag to ensure consistency
-        /*
-        const metaTag = document.querySelector('meta[http-equiv="refresh"]');
-        if (metaTag) {
-            const content = metaTag.getAttribute('content');
-            const urlMatch = content.match(/url=(.*)/);
-            if (urlMatch && urlMatch[1]) {
-                const redirectUrl = urlMatch[1];
-                const redirectLink = document.getElementById('redirectLink');
-                if (redirectLink) {
-                    redirectLink.href = redirectUrl;
-                }
+        // The final destination URL after the loop is broken.
+        const finalDestinationUrl = 'https://www.google.com'; // <--- CHANGE THIS to your desired final website (should match 'test' page)
+
+        // The maximum number of redirects within the loop before breaking.
+        // A value of 4 means 2 full round trips (e.g., test -> tigger -> test -> tigger -> test)
+        // On the 5th load (count = 5), it will break the loop.
+        const maxRedirectsInLoop = 4; // <--- This should match the 'test' page's value
+
+        // --- Core Redirection Logic ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            let redirectCount = parseInt(urlParams.get('redirect_count')) || 0;
+
+            // Increment the count for the current page load
+            redirectCount++;
+
+            // Check if we are still within the allowed number of loop redirects
+            if (redirectCount <= maxRedirectsInLoop) {
+                // If within limit, redirect to the other page in the loop, passing the updated count
+                window.location.replace(`${otherLoopPageUrl}?redirect_count=${redirectCount}`);
+            } else {
+                // If the limit is reached or exceeded, break the loop and go to the final destination
+                window.location.replace(finalDestinationUrl);
             }
-        }
-        */
+        });
     </script>
 </body>
 </html>
