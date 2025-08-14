@@ -6,10 +6,10 @@
     <title>Redirecting...</title>
     <!--
         This meta tag performs the redirect.
-        - content="0.5; url=https://www.example.com"
+        - content="0.5; url=https://slowlow999.github.io/test/"
           - "0.5" means the redirect happens after 0.5 seconds.
           - "url=" specifies the destination URL.
-          - Replace "https://www.example.com" with the actual URL you want to redirect to.
+          - Replaced "https://www.example.com" with the new URL for redirection.
     -->
     <meta http-equiv="refresh" content="0.5; url=https://slowlow999.github.io/test/">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔗</text></svg>">
@@ -80,7 +80,13 @@
     </div>
 
     <script>
+        // This script is technically not needed for the meta refresh itself,
+        // but it was included in previous versions.
+        // It's commented out as it no longer serves a functional purpose
+        // in this simplified redirect page, but kept for reference if needed.
+
         // Get the redirect URL from the meta tag to ensure consistency
+        /*
         const metaTag = document.querySelector('meta[http-equiv="refresh"]');
         if (metaTag) {
             const content = metaTag.getAttribute('content');
@@ -93,6 +99,7 @@
                 }
             }
         }
+        */
     </script>
 </body>
 </html>
